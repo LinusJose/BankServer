@@ -38,7 +38,7 @@ let accountDetails= {
         currentUser=user[acno]["username"]
         return {
             statusCode:200,
-            status:false,
+            status:true,
             message:"Succesfuly login"
         }
        
@@ -48,7 +48,7 @@ let accountDetails= {
        return {
         statusCode:422,
         status:false,
-        message:"incorrect pswd"
+        message:"invalid password"
        }
       }
     }
@@ -56,11 +56,83 @@ let accountDetails= {
       return {
         statusCode:422,
         status:false,
-        message:"invalid acnt"
+        message:"invalid account"
       }
     }
 }
-  module.exports={
+const deposit=(acno,pswd,amt)=> {
+  var amount=parseInt(amt)
+  let user=accountDetails;
+  if (acno in user){
+    if(pswd == user[acno]["password"]){
+      user[acno]["balance"]+=amount;
+      return{
+        statusCode:200,
+        status:true,
+        balance:user[acno]["balance"],
+        message:amount+" credited  and new balance is " +user[acno]["balance"]
+    }
+      }
+      else{
+        return {
+          statusCode:422,
+          status:false,
+          message:"invalid password"
+        }
+      }}
+
+else{
+  return{
+statusCode:422,
+status:false,
+message:"invalid account"
+}
+}}
+const withdraw=(acno,pswd,amt)=> {
+  var amount=parseInt(amt)
+  let user=accountDetails;
+  if (acno in user){
+    if(pswd == user[acno]["password"]){
+      if(user[acno]["balance"]>amount){
+
+      user[acno]["balance"]-=amount;
+
+      return{
+        statusCode:200,
+        status:true,
+        balance:user[acno]["balance"],
+        message:amount+ " debited and new balance is " +user[acno]["balance"]
+    }
+      }
+      else{
+        return{
+          statusCode:422,
+          status:false,
+          message:"Insufficient Balance"
+        }
+      }
+    }
+      else{
+        return {
+          statusCode:422,
+          status:false,
+          message:"invalid password"
+        }
+      }
+    }
+
+else{
+  return{
+statusCode:422,
+status:false,
+message:"invalid account"
+}
+}
+}
+
+module.exports={
       register,
-      login
+      login,
+      deposit,
+      withdraw
   }

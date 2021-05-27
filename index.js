@@ -15,12 +15,23 @@ app.post('/register',(req,res)=>{
 
     const result=dataService.register(req.body.uname,req.body.acno,req.body.pswd);;
     res.status(result.statusCode).json(result)
-    // console.log(res.status(result.statusCode).json(result));
     
 });
 app.post('/login',(req,res)=>{
 
     const result=dataService.login(req.body.acno,req.body.pswd);;
+    res.status(result.statusCode).json(result)
+});
+app.post('/deposit',(req,res)=>{
+    console.log(req.body);
+
+    const result=dataService.deposit(req.body.acno,req.body.pswd,req.body.amount);
+    res.status(result.statusCode).json(result)
+});
+app.post('/withdraw',(req,res)=>{
+    console.log(req.body);
+
+    const result=dataService.withdraw(req.body.acno,req.body.pswd,req.body.amount);
     res.status(result.statusCode).json(result)
 });
 

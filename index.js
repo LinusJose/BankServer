@@ -60,16 +60,32 @@ app.post('/login',(req,res)=>{
     res.status(result.statusCode).json(result)
     })
 });
+
+
+
+
 app.post('/deposit',authMiddleware,(req,res)=>{
     console.log(req.session.currentUser);
 
-    const result=dataService.deposit(req.body.acno,req.body.pswd,req.body.amount);
+  dataService.deposit(req.body.acno,req.body.pswd,req.body.amount)
+  .then(result=>{
     res.status(result.statusCode).json(result)
+  })
+   
 });
+
+
+
+
+
+
 app.post('/withdraw',authMiddleware,(req,res)=>{
 
-    const result=dataService.withdraw(req.body.acno,req.body.pswd,req.body.amount);
-    res.status(result.statusCode).json(result)
+    dataService.withdraw(req.body.acno,req.body.pswd,req.body.amount)
+    .then(result=>{
+        res.status(result.statusCode).json(result)
+ 
+    })
 });
 
 app.put('/',(req,res)=>{

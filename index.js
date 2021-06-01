@@ -21,6 +21,7 @@ const logMiddleware=(req,res,next)=>{
    
 }
 app.use(logMiddleware);
+
 const authMiddleware=(req,res,next)=>{
   if (!req.session.currentUser) {
     return res.json( {
@@ -43,15 +44,21 @@ app.post('/',(req,res)=>{
 });
 app.post('/register',(req,res)=>{
 
-    const result=dataService.register(req.body.uname,req.body.acno,req.body.pswd);;
-    res.status(result.statusCode).json(result)
+    dataService.register(req.body.uname,req.body.acno,req.body.pswd)
+    .then(result=>{
+        res.status(result.statusCode).json(result)
+   
+    })
     
 });
 app.post('/login',(req,res)=>{
 
 
-    const result=dataService.login(req,req.body.acno,req.body.pswd);;
+    dataService.login(req,req.body.acno,req.body.pswd)
+    .then(result=>{
+
     res.status(result.statusCode).json(result)
+    })
 });
 app.post('/deposit',authMiddleware,(req,res)=>{
     console.log(req.session.currentUser);
@@ -81,4 +88,3 @@ app.listen(3000,()=>{
     console.log("Server Started at port:3000");
 
 });
-

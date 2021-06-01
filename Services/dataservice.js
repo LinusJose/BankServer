@@ -1,3 +1,4 @@
+const db=require('./db');
 let currentUser;
 let accountDetails = {
   1000: { acno: 1000, username: "userone", password: "userone", balance: 50000 },
@@ -5,37 +6,43 @@ let accountDetails = {
   1002: { acno: 1002, username: "userthree", password: "userthree", balance: 10000 },
   1003: { acno: 1003, username: "userfour", password: "userfour", balance: 6000 }
 }
-const register = (uname, acno, pswd) => {
+    const register = (uname, acno, pswd) => {
 
-  let user = accountDetails;
-  if (acno in user) {
-    return {
-      statusCode: 422,
-      status: false,
-      message: "User exists,please login"
-    }
+      return db.User.findOne({acno})
+      .then(user=>{
+        if(user){
+          return {
+            statusCode: 422,
+            status: false,
+            message: "User exists,please login"
+          }
 
-  }
-  else {
-    user[acno] = {
-      acno,
-      username: uname,
-      password: pswd,
-      balance: 0
+        }
+    else{
+      const newUser=new db.User({
+        acno,
+        username: uname,
+        password: pswd,
+        balance: 0
+
+      })
+      newUser.save();
+      return{
+        statusCode: 200,
+        status: true,
+        message: "Successfully reigsterd"
+
+      }
     }
-    return {
-      statusCode: 200,
-      status: true,
-      message: "Successfully reigsterd"
-    }
-  }
+  })
 }
-const login = (req, acno, pswd) => {
-  let user = accountDetails;
-  if (acno in user) {
+const login = (req, accno, password) => {
+  var acno=parseInt(accno)
 
-    if (pswd == user[acno]["password"]) {
-      req.session.currentUser = user[acno]
+  return db.User.findOne({acno,password})
+  .then(user=>{
+    if(user){
+      req.session.currentUser=user;
       return {
         statusCode: 200,
         status: true,
@@ -43,22 +50,17 @@ const login = (req, acno, pswd) => {
       }
 
     }
-
     else {
       return {
         statusCode: 422,
         status: false,
-        message: "invalid password"
+        message: "invalid account"
       }
     }
-  }
-  else {
-    return {
-      statusCode: 422,
-      status: false,
-      message: "invalid account"
-    }
-  }
+
+  })
+
+
 }
 const deposit = (acno, pswd, amt) => {
  

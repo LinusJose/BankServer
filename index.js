@@ -3,7 +3,6 @@ const session=require('express-session');
 const cors=require('cors')
 const dataService=require('./Services/dataservice')
 const app=express();
-
 app.use(cors({
     origin:'http://192.168.1.3:8080',
     credentials:true

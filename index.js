@@ -1,13 +1,19 @@
 const express=require('express');
 const session=require('express-session');
+const cors=require('cors')
 const dataService=require('./Services/dataservice')
 const app=express();
+app.use(cors({
+    origin:'http://localhost:4200',
+    credentials:true
+}))
 app.use(session({
     secret:'randomsecurestring',
     resave:false,
     saveUninitialized:false
 }))
 app.use(express.json());
+
 app.use((req,res,next)=>{
 console.log("Middleware");
 
@@ -20,7 +26,7 @@ const logMiddleware=(req,res,next)=>{
     next()
    
 }
-app.use(logMiddleware);
+// app.use(logMiddleware);
 
 const authMiddleware=(req,res,next)=>{
   if (!req.session.currentUser) {
@@ -42,6 +48,9 @@ app.post('/',(req,res)=>{
     res.send("this is a post method")
 
 });
+
+// REGISTER
+
 app.post('/register',(req,res)=>{
 
     dataService.register(req.body.uname,req.body.acno,req.body.pswd)
@@ -51,6 +60,9 @@ app.post('/register',(req,res)=>{
     })
     
 });
+
+// LOGIN
+
 app.post('/login',(req,res)=>{
 
 
@@ -61,7 +73,7 @@ app.post('/login',(req,res)=>{
     })
 });
 
-
+//DEPOSIT
 
 
 app.post('/deposit',authMiddleware,(req,res)=>{
@@ -75,13 +87,13 @@ app.post('/deposit',authMiddleware,(req,res)=>{
 });
 
 
-
+//WITHDRAW
 
 
 
 app.post('/withdraw',authMiddleware,(req,res)=>{
 
-    dataService.withdraw(req.body.acno,req.body.pswd,req.body.amount)
+    dataService.withdraw(req,req.body.acno,req.body.pswd,req.body.amount)
     .then(result=>{
         res.status(result.statusCode).json(result)
  
@@ -96,8 +108,22 @@ app.patch('/',(req,res)=>{
     res.send("this is a patch method")
 
 });
+
+
+
 app.delete('/',(req,res)=>{
     res.send("this is a delete method")
+
+});
+
+//DELETE-ACCOUNT
+
+app.delete('/deleteAccDetails/:acno',authMiddleware,(req,res)=>{
+    dataService.deleteAccDetails(req.params.acno)
+    .then(result=>{
+        res.status(result.statusCode).json(result)
+ 
+    })
 
 });
 app.listen(3000,()=>{

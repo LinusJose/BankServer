@@ -1,5 +1,5 @@
 const db=require('./db');
-let currentUser;
+// let currentUser;
 let accountDetails = {
   1000: { acno: 1000, username: "userone", password: "userone", balance: 50000 },
   1001: { acno: 1001, username: "usertwo", password: "usertwo", balance: 5000 },
@@ -36,17 +36,19 @@ let accountDetails = {
     }
   })
 }
-const login = (req, accno, password) => {
-  var acno=parseInt(accno)
+const login = (req, acno, password) => {
+  var acno=parseInt(acno)
 
   return db.User.findOne({acno,password})
   .then(user=>{
     if(user){
-      req.session.currentUser=user;
+      req.session.currentUser=user.acno;
       return {
         statusCode: 200,
         status: true,
-        message: "Succesfuly login"
+        message: "Succesfuly login",
+        name:user.username,
+        acno:user.acno
       }
 
     }
@@ -62,9 +64,9 @@ const login = (req, accno, password) => {
 
 
 }
-const deposit = (acno, password, amt) => {
+const deposit = (acno, password, amount) => {
  
-  var amount = parseInt(amt)
+  var amount = parseInt(amount)
   return db.User.findOne({acno,password})
   .then(user=>{
     if(!user){
@@ -75,6 +77,7 @@ const deposit = (acno, password, amt) => {
         }
       }
       user.balance+=amount;
+     
 user.save();
 return {
   statusCode: 200,
@@ -86,8 +89,10 @@ return {
   })
 
 }
-const withdraw = (acno, password, amt) => {
-  var amount = parseInt(amt)
+const withdraw = (req,acno, password, amount) => {
+
+  var amount = parseInt(amount)
+
   return db.User.findOne({acno,password})
   .then(user=>{
     if(!user){
@@ -97,6 +102,13 @@ const withdraw = (acno, password, amt) => {
         message: "invalid Credentials"
       }
 
+    }
+    if(req.session.currentUser!=acno){
+      return {
+        statusCode: 422,
+        status: false,
+        message:"Permission Denied"
+      }
     }
     if(user.balance<amount){
 
@@ -112,17 +124,37 @@ const withdraw = (acno, password, amt) => {
       statusCode: 200,
       status: true,
       balance: user.balance,
-      message: amount + " debited and new balance is " + user.balance
+      message: amount  +  " debited and new balance is " +  user.balance
     }
 
     })
 
   }
   
+  const deleteAccDetails=(acno)=>{
+    return db.User.deleteOne({
+      acno:acno
+    }).then(user=>{
+      if(!user){
+        return {
+          statusCode: 422,
+          status: false,
+          message:"Operation Failed"
+        }
+
+      }
+      return {
+        statusCode: 200,
+        status: true,
+        message:"Account Number " + acno + " deleted Successfully"
+      }
+    })
+  }
 
 module.exports = {
   register,
   login,
   deposit,
-  withdraw
+  withdraw,
+  deleteAccDetails
 }

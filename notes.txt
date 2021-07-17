@@ -1,0 +1,11 @@
+HP@DESKTOP-VJQVG9M MINGW64 ~/Desktop/Angular/bankApp/dist/bankApp (master)
+$ ng build --prod
+
+
+HP@DESKTOP-VJQVG9M MINGW64 ~/Desktop/Angular/bankApp/dist/bankApp (master)
+$ npm i -g http-server
+
+
+HP@DESKTOP-VJQVG9M MINGW64 ~/Desktop/Angular/bankApp/dist/bankApp (master)
+$ http-server
+  put in cors origin (index.js)

@@ -1,10 +1,10 @@
 const express=require('express');
 const session=require('express-session');
-const cors=require('cors')
-const dataService=require('./Services/dataservice')
+const cors=require('cors');
+const dataService=require('./Services/dataservice');
 const app=express();
 app.use(cors({
-    origin:'http://192.168.1.3:8080',
+    origin:'http://localhost:4200',
     credentials:true
 }))
 app.use(session({
